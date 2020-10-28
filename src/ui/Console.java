@@ -1,8 +1,9 @@
 package ui;
 
 import deck.Card;
+import deck.Value;
+import hand.Hand;
 import hand.StandardHand;
-import players.Human;
 import players.Player;
 
 import java.util.List;
@@ -11,60 +12,95 @@ import java.util.Scanner;
 public class Console implements UI{
     private Scanner scanner = new Scanner(System.in);
 
-
     @Override
-    public void publicShowHand(StandardHand hand) {
-        List<Card> cards = hand.getCards();
-        printHiddenCard();
-        final int REST_OF_CARDS = cards.size() - 1;
-        for (int i = 1; i <= REST_OF_CARDS; i++) {
-            printCard(cards.get(i));
-        }
-    }
-
-    @Override
-    public void showHandAllCards(StandardHand hand) {
-        List<Card> cards = hand.getCards();
-        final Card FIRST_CARD = cards.get(0);
-        printCard(FIRST_CARD);
-        final int REST_OF_CARDS = cards.size() - 1;
-        for (int i = 1; i <= REST_OF_CARDS; i++) {
-            printCard(cards.get(i));
-        }
-    }
-
-    @Override
-    public void showAllHandsInGame(List<StandardHand> hands) {
-        for (StandardHand hand : hands) {
-            printPlayer(hand.getOwner());
-            publicShowHand(hand);
-            lineBreak();
-        }
+    public void printPlayer(Player player) {
+        System.out.print(Player.isHuman(player) ? "HUMAN " : "AI ");
+        System.out.print(player.getName() + " ");
         lineBreak();
     }
 
     @Override
-    public boolean promptForHit() {
-        return getAnswer("Hit?");
+    public void printHand(Hand hand) {
+        hand.getCards().stream().forEach(this::printCard);
+        lineBreak();
     }
 
     @Override
-    public int inputBet() {
-        System.out.print("Bet Amount: ");
-        return scanner.nextInt();
+    public void ask(Value cardValue, Player player) {
+        System.out.println(player.getName() + ", do you have any " + cardValue.toString() + "s?");
     }
 
     @Override
-    public boolean getAnswer(String string) {
-        System.out.print(string);
-        System.out.print(" (Y/n)");
+    public boolean respond(Value cardValue) {
         return scanner.next().toUpperCase().startsWith("Y");
     }
 
+    @Override
+    public Player choosePlayer(List<Player> players) {
+        System.out.println("Choose who to ask (Enter their number) ~");
+        for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+            System.out.print(playerIndex + " - ");
+            printPlayer(players.get(playerIndex));
+        }
+        return players.get(scanner.nextInt());
+    }
 
-    public void printPlayer(Player player) {
+    @Override
+    public Value chooseValue() {
+        System.out.println("Choose a value below~");
+        for (int index = 2; index < 11; index++) {
+            System.out.print(index + " ");
+        }
+        char[] faceCards = new char[]{'J', 'Q', 'K', 'A'};
+        for (char faceCard : faceCards) {
+            System.out.print(faceCard + " ");
+        }
+        String input = scanner.next();
+        Value chosenValue = null;
+        if (input.toUpperCase().startsWith("A")) {
+            chosenValue = Value.ACE;
+        } else if (input.toUpperCase().startsWith("K")) {
+            chosenValue = Value.KING;
+        } else if (input.toUpperCase().startsWith("Q")) {
+            chosenValue = Value.QUEEN;
+        } else if (input.toUpperCase().startsWith("J")) {
+            chosenValue = Value.JACK;
+        } else if (input.trim().equals("10")) {
+            chosenValue = Value.TEN;
+        }else if (input.trim().equals("9")) {
+            chosenValue = Value.NINE;
+        }else if (input.trim().equals("8")) {
+            chosenValue = Value.EIGHT;
+        }else if (input.trim().equals("7")) {
+            chosenValue = Value.SEVEN;
+        }else if (input.trim().equals("6")) {
+            chosenValue = Value.SIX;
+        }else if (input.trim().equals("5")) {
+            chosenValue = Value.FIVE;
+        }else if (input.trim().equals("4")) {
+            chosenValue = Value.FOUR;
+        }else if (input.trim().equals("3")) {
+            chosenValue = Value.THREE;
+        }else if (input.trim().equals("2")) {
+            chosenValue = Value.TWO;
+        } else {
+            System.out.println("Enter valid card value");
+            chooseValue();
+        }
+        System.out.println(chosenValue.toString());
 
+        return chosenValue;
+    }
 
+    @Override
+    public String inputName() {
+        System.out.print("Enter you name: ");
+        return scanner.next().trim();
+    }
+
+    @Override
+    public void sendBookResults() {
+        System.out.println("You made a book!");
     }
 
     public void printCard(Card card) {

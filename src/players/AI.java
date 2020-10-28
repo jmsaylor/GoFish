@@ -4,15 +4,30 @@ import deck.Card;
 import deck.Value;
 import hand.Hand;
 import hand.StandardHand;
+import ui.UI;
 
 import java.util.List;
+import java.util.Random;
 
 public class AI extends PlayerTemplate implements Player {
     private static int extantAI = 0;
-    public AI(Hand hand) {
-        super(getNewAIName(), hand);
+    private static Random random = new Random();
+
+
+    public AI(Hand hand, UI ui) {
+        super(getNewAIName(), hand, ui);
     }
 
+
+    @Override
+    public boolean ask(List<Player> allPlayers) {
+        int randomPlayerNumber =  (int) (allPlayers.size() * random.nextFloat());
+        Player randomPlayer = allPlayers.get(randomPlayerNumber);
+        int randomCardNumber = (int) (getCards().size() * random.nextFloat());
+        Value randomHandValue = getCards().get(randomCardNumber).VALUE;
+        return ask(randomHandValue, randomPlayer);
+
+    }
 
 
     private static String getNewAIName() {
@@ -20,8 +35,7 @@ public class AI extends PlayerTemplate implements Player {
         return names[extantAI++];
     }
 
-    @Override
-    public boolean ask() {
-
+    private static int getRandomNumber(int bound) {
+        return random.nextInt(bound);
     }
 }

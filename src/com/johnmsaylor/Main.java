@@ -3,6 +3,12 @@ package com.johnmsaylor;
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+
+        var game = new GoFish();
+
+        game.addNewHumanPlayer("John");
+        game.addNewAIPlayer();
+
+        game.play();
     }
 }
